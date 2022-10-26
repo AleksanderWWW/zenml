@@ -1,17 +1,13 @@
 from typing import Type
 
 from zenml.experiment_trackers.base_experiment_tracker import (
-    BaseExperimentTrackerConfig,
     BaseExperimentTrackerFlavor,
 )
 from zenml.integrations.neptune import NEPTUNE_MODEL_EXPERIMENT_TRACKER_FLAVOR
 from zenml.integrations.neptune.experiment_trackers import (
     NeptuneExperimentTracker,
+    NeptuneExperimentTrackerConfig,
 )
-
-
-class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
-    ...
 
 
 class NeptuneExperimentTrackerFlavor(BaseExperimentTrackerFlavor):

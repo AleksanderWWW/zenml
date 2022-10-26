@@ -2,10 +2,12 @@ from typing import Any, cast
 
 from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTracker,
+    BaseExperimentTrackerConfig,
 )
-from zenml.integrations.neptune.flavors.neptune_experiment_tracker_flavor import (
-    NeptuneExperimentTrackerConfig,
-)
+
+
+class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
+    ...
 
 
 class NeptuneExperimentTracker(BaseExperimentTracker):
