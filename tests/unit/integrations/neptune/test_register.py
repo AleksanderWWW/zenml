@@ -1,5 +1,7 @@
 import subprocess
 
+from zenml.client import Client
+
 
 def test_if_register_possible():
     subprocess.run(["zenml init"], shell=True)
