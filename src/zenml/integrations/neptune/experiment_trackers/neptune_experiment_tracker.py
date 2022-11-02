@@ -1,34 +1,40 @@
 import os
 from uuid import uuid4
-from typing import TYPE_CHECKING, Any, Optional, cast
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
+
+import neptune.new as neptune
 
 from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTracker,
     BaseExperimentTrackerConfig,
 )
+
+from zenml.utils.secret_utils import SecretField
 from zenml.integrations.neptune.neptune_utils import singleton
 
 if TYPE_CHECKING:
     from zenml.config.step_run_info import StepRunInfo
 
 
-PROJECT_NAME = "PROJECT_NAME"
+NEPTUNE_PROJECT = "NEPTUNE_PROJECT"
 NEPTUNE_API_TOKEN = "NEPTUNE_API_TOKEN"
+
+NEPTUNE_RUN_TYPE = Union[neptune.Run, "MockRun", None]
 
 
 class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
     project: Optional[str] = None
-    api_token: Optional[str] = None
+    api_token: str = SecretField()
 
 
 class MockRun:
-    def __init__(self, project_name, api_token):
+    def __init__(self, project_name, api_token) -> None:
         self.project_name = project_name
         self.api_token = api_token
         self.storage = {}
         self.id = uuid4()
 
-    def log(self, key, val):
+    def log(self, key, val) -> None:
         self.storage[key] = val
         print(f"stored {val} as {key}")
 
@@ -36,24 +42,25 @@ class MockRun:
         return str(self.id)
 
 
-def mock_init_run(project, api_token) -> MockRun:
+def mock_init_run(project, api_token) -> NEPTUNE_RUN_TYPE:
     print(f"Initializing project {project} with token {api_token}")
     return MockRun(project, api_token)
 
 
 @singleton
 class NeptuneRunState:
-    def __init__(self):
-        self._run = None
+    """Singleton class to store and persist run object created
+    by an experiment tracker"""
+    def __init__(self) -> None:
+        self._run_id: str = ""
 
-    def store_run(self, run_instance):
-        self._run = run_instance
+    def store_run_id(self, run_id) -> None:
+        self._run_id = run_id
 
-    def get_active_run(self):
-        if self._run:
-            return self._run
+    def get_active_run_id(self) -> str:
+        if self._run_id:
+            return self._run_id
         raise ValueError("No active run present at the moment")
-
 
 
 class NeptuneExperimentTracker(BaseExperimentTracker):
@@ -73,7 +80,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
 
     @property
     def config(self) -> NeptuneExperimentTrackerConfig:
-        """Returns the `MLFlowExperimentTrackerConfig` config.
+        """Returns the `NeptuneExperimentTrackerConfig` config.
 
         Returns:
             The configuration.
@@ -81,7 +88,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
         return cast(NeptuneExperimentTrackerConfig, self._config)
 
     def prepare_step_run(self, info: "StepRunInfo") -> None:
-        project = self.config.project or os.getenv(PROJECT_NAME)
-        token = self.config.api_token or os.getenv(NEPTUNE_API_TOKEN)
-        run = mock_init_run(project, token)
-        self.run_state.store_run(run)
+        """Initializes neptune run and stores it in the run_state
+        object, so that it can be accessed later from other places
+        e.g. step."""
+        ...
