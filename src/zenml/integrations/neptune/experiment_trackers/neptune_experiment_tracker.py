@@ -1,4 +1,3 @@
-import os
 from uuid import uuid4
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
@@ -10,14 +9,10 @@ from zenml.experiment_trackers.base_experiment_tracker import (
 )
 
 from zenml.utils.secret_utils import SecretField
-from zenml.integrations.neptune.neptune_utils import singleton
 
 if TYPE_CHECKING:
     from zenml.config.step_run_info import StepRunInfo
 
-
-NEPTUNE_PROJECT = "NEPTUNE_PROJECT"
-NEPTUNE_API_TOKEN = "NEPTUNE_API_TOKEN"
 
 NEPTUNE_RUN_TYPE = Union[neptune.Run, "MockRun", None]
 
@@ -47,22 +42,6 @@ def mock_init_run(project, api_token) -> NEPTUNE_RUN_TYPE:
     return MockRun(project, api_token)
 
 
-@singleton
-class NeptuneRunState:
-    """Singleton class to store and persist run object created
-    by an experiment tracker"""
-    def __init__(self) -> None:
-        self._run_id: str = ""
-
-    def store_run_id(self, run_id) -> None:
-        self._run_id = run_id
-
-    def get_active_run_id(self) -> str:
-        if self._run_id:
-            return self._run_id
-        raise ValueError("No active run present at the moment")
-
-
 class NeptuneExperimentTracker(BaseExperimentTracker):
     """
     Track experiments using neptune.ai
@@ -76,7 +55,6 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
             **kwargs: Arbitrary keyword arguments.
         """
         super().__init__(*args, **kwargs)
-        self.run_state = NeptuneRunState()
 
     @property
     def config(self) -> NeptuneExperimentTrackerConfig:
