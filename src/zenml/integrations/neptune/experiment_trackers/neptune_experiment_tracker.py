@@ -1,4 +1,5 @@
-from uuid import uuid4
+import hashlib
+
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import neptune.new as neptune
@@ -10,6 +11,8 @@ from zenml.experiment_trackers.base_experiment_tracker import (
 
 from zenml.utils.secret_utils import SecretField
 
+from zenml.integrations.neptune.neptune_utils import RunState
+
 if TYPE_CHECKING:
     from zenml.config.step_run_info import StepRunInfo
 
@@ -20,26 +23,6 @@ NEPTUNE_RUN_TYPE = Union[neptune.Run, "MockRun", None]
 class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
     project: Optional[str] = None
     api_token: str = SecretField()
-
-
-class MockRun:
-    def __init__(self, project_name, api_token) -> None:
-        self.project_name = project_name
-        self.api_token = api_token
-        self.storage = {}
-        self.id = uuid4()
-
-    def log(self, key, val) -> None:
-        self.storage[key] = val
-        print(f"stored {val} as {key}")
-
-    def get_id(self) -> str:
-        return str(self.id)
-
-
-def mock_init_run(project, api_token) -> NEPTUNE_RUN_TYPE:
-    print(f"Initializing project {project} with token {api_token}")
-    return MockRun(project, api_token)
 
 
 class NeptuneExperimentTracker(BaseExperimentTracker):
@@ -55,6 +38,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
             **kwargs: Arbitrary keyword arguments.
         """
         super().__init__(*args, **kwargs)
+        self.run_state: RunState = RunState()
 
     @property
     def config(self) -> NeptuneExperimentTrackerConfig:
@@ -69,4 +53,13 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
         """Initializes neptune run and stores it in the run_state
         object, so that it can be accessed later from other places
         e.g. step."""
+        run_name = info.run_name
+
+        run_id = hashlib.md5(run_name.encode()).hexdigest()
+
+        run = neptune.init_run(custom_run_id=run_id)
+
+        self.run_state.set_active_run(run)
+
+    def cleanup_step_run(self, info: "StepRunInfo") -> None:
         ...
