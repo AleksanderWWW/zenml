@@ -102,7 +102,5 @@ def neptune_step(step):
     experiment_tracker = client.active_stack.experiment_tracker.name
 
     def wrapper(*args, **kwargs):
-        if "experiment_tracker" in kwargs:
-            kwargs.pop("experiment_tracker")
         return step(*args, experiment_tracker=experiment_tracker, **kwargs)
     return wrapper
