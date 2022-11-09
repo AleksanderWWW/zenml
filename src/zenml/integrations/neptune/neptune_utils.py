@@ -6,6 +6,8 @@ from functools import partial
 
 import neptune.new as neptune
 
+from zenml.client import Client
+from zenml.integrations.constants import NEPTUNE
 from zenml.materializers.base_materializer import BaseMaterializer
 from zenml.integrations.neptune.neptune_constants import NEPTUNE_RUN_ID
 
@@ -86,3 +88,21 @@ class NeptuneRunMaterializer(BaseMaterializer):
 
     def handle_return(self, run: neptune.metadata_containers.Run) -> None:
         ...
+
+
+def get_neptune_run() -> neptune.metadata_containers.Run:
+    client = Client()
+    experiment_tracker = client.active_stack.experiment_tracker
+    if experiment_tracker.flavor == NEPTUNE:
+        return experiment_tracker.run_state.active_run
+
+
+def neptune_step(step):
+    client = Client()
+    experiment_tracker = client.active_stack.experiment_tracker.name
+
+    def wrapper(*args, **kwargs):
+        if "experiment_tracker" in kwargs:
+            kwargs.pop("experiment_tracker")
+        return step(*args, experiment_tracker=experiment_tracker, **kwargs)
+    return wrapper

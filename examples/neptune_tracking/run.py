@@ -1,7 +1,6 @@
 from pipelines.training_pipeline.training_pipeline import (
     neptune_example_pipeline,
 )
-from steps.evaluator.evaluator_step import tf_evaluator
 from steps.loader.loader_step import loader_mnist
 from steps.normalizer.normalizer_step import normalizer
 from steps.trainer.trainer_step import TrainerParameters, tf_trainer

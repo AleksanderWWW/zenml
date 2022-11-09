@@ -3,10 +3,8 @@ import tensorflow as tf
 
 from neptune.new.integrations.tensorflow_keras import NeptuneCallback
 
-from zenml.client import Client
 from zenml.steps import BaseParameters, step
-
-experiment_tracker = Client().active_stack.experiment_tracker
+from zenml.integrations.neptune.neptune_utils import get_neptune_run, neptune_step
 
 
 class TrainerParameters(BaseParameters):
@@ -16,7 +14,8 @@ class TrainerParameters(BaseParameters):
     lr: float = 0.001
 
 
-@step(experiment_tracker=experiment_tracker.name)
+@neptune_step
+@step(enable_cache=False,)
 def tf_trainer(
     params: TrainerParameters,
     x_train: np.ndarray,
@@ -24,7 +23,7 @@ def tf_trainer(
 ) -> None:
     """Train a neural net from scratch to recognize MNIST digits return our
     model or the learner"""
-    neptune_run = experiment_tracker.run_state.active_run
+    neptune_run = get_neptune_run()
     neptune_run["params/lr"] = params.lr
 
     neptune_cbk = NeptuneCallback(run=neptune_run, base_namespace="metrics")
