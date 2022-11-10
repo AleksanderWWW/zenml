@@ -1,15 +1,12 @@
-import os
 import warnings
 
-from typing import Type, Callable, TypeVar
+from typing import Callable, TypeVar
 from functools import partial
 
 import neptune.new as neptune
 
 from zenml.client import Client
 from zenml.integrations.constants import NEPTUNE
-from zenml.materializers.base_materializer import BaseMaterializer
-from zenml.integrations.neptune.neptune_constants import NEPTUNE_RUN_ID
 
 
 NEPTUNE_F = TypeVar("NEPTUNE_F", bound=Callable[..., neptune.metadata_containers.Run])
@@ -75,19 +72,6 @@ class RunState:
         run = neptune.init_run(*args, with_id=self.run_id, **kwargs)
 
         return run
-
-
-class NeptuneRunMaterializer(BaseMaterializer):
-    ASSOCIATED_TYPES = (neptune.metadata_containers.Run,)
-
-    def handle_input(self, data_type: Type[neptune.metadata_containers.Run]) -> neptune.metadata_containers.Run:
-        super().handle_input(data_type)
-        run_id = os.getenv(NEPTUNE_RUN_ID)
-        run = neptune.init_run(with_id=run_id)
-        return run
-
-    def handle_return(self, run: neptune.metadata_containers.Run) -> None:
-        ...
 
 
 def get_neptune_run() -> neptune.metadata_containers.Run:
