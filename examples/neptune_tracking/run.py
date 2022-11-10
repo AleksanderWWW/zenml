@@ -4,6 +4,7 @@ from pipelines.training_pipeline.training_pipeline import (
 from steps.loader.loader_step import loader_mnist
 from steps.normalizer.normalizer_step import normalizer
 from steps.trainer.trainer_step import TrainerParameters, tf_trainer
+from steps.evaluator.evaluator_step import tf_evaluator
 
 
 if __name__ == "__main__":
@@ -12,6 +13,7 @@ if __name__ == "__main__":
         importer=loader_mnist(),
         normalizer=normalizer(),
         trainer=tf_trainer(params=TrainerParameters(epochs=5, lr=0.0003)),
+        evaluator=tf_evaluator(),
     )
 
     run.run()
