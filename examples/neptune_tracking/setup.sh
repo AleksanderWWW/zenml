@@ -8,7 +8,7 @@ setup_stack () {
   zenml stack register neptune_stack \
       -a default \
       -o default \
-      -e mlflow_tracker || \
+      -e neptune_tracker || \
     msg "${WARNING}Reusing preexisting stack ${NOFORMAT}neptune_stack"
 
   zenml stack set neptune_stack
