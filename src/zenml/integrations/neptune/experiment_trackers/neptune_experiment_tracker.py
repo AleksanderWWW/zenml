@@ -1,3 +1,4 @@
+import os
 import hashlib
 
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
@@ -10,6 +11,11 @@ from zenml.experiment_trackers.base_experiment_tracker import (
 )
 
 from zenml.utils.secret_utils import SecretField
+
+from zenml.integrations.neptune.neptune_constants import (
+    NEPTUNE_PROJECT,
+    NEPTUNE_API_TOKEN,
+)
 
 from zenml.integrations.neptune.experiment_trackers.run_state import RunState
 
@@ -57,7 +63,14 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
 
         run_id = hashlib.md5(run_name.encode()).hexdigest()
 
-        run = neptune.init_run(custom_run_id=run_id)
+        project = self.config.project or os.getenv(NEPTUNE_PROJECT)
+        token = self.config.api_token or os.getenv(NEPTUNE_API_TOKEN)
+
+        run = neptune.init_run(
+            project=project,
+            api_token=token,
+            custom_run_id=run_id
+        )
 
         self.run_state.set_active_run(run)
 
