@@ -4,7 +4,7 @@ import tensorflow as tf
 from neptune.new.integrations.tensorflow_keras import NeptuneCallback
 
 from zenml.steps import BaseParameters, step
-from zenml.integrations.neptune.neptune_utils import get_neptune_run, neptune_step
+from zenml.integrations.neptune.experiment_trackers.run_state import get_neptune_run, neptune_step
 from zenml.integrations.tensorflow.materializers.keras_materializer import KerasMaterializer
 
 

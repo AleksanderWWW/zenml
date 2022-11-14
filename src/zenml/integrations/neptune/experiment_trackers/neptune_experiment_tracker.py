@@ -11,7 +11,7 @@ from zenml.experiment_trackers.base_experiment_tracker import (
 
 from zenml.utils.secret_utils import SecretField
 
-from zenml.integrations.neptune.neptune_utils import RunState
+from zenml.integrations.neptune.experiment_trackers.run_state import RunState
 
 if TYPE_CHECKING:
     from zenml.config.step_run_info import StepRunInfo
