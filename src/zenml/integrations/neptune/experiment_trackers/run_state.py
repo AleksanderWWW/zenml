@@ -1,15 +1,7 @@
-import warnings
-from functools import partial
-from typing import Callable, TypeVar
-
 import neptune.new as neptune
 
 from zenml.client import Client
 from zenml.integrations.constants import NEPTUNE
-
-NEPTUNE_F = TypeVar(
-    "NEPTUNE_F", bound=Callable[..., neptune.metadata_containers.Run]
-)
 
 
 def singleton(class_):
@@ -21,10 +13,6 @@ def singleton(class_):
         return instances[class_]
 
     return getinstance
-
-
-class RunIDNotSet(Exception):
-    pass
 
 
 class NoActiveRunException(Exception):
@@ -47,36 +35,6 @@ class RunState:
         if self._active_run is None:
             raise NoActiveRunException("No active run at the moment")
         return self._active_run
-
-    # BELOW RUN_ID-BASED SOLUTION
-
-    @property
-    def run_id(self) -> str:
-        return self._run_id
-
-    @run_id.setter
-    def run_id(self, run_id: str) -> None:
-        self._run_id = run_id
-
-    @property
-    def get_active_run(self) -> NEPTUNE_F:
-        return partial(neptune.init_run, with_id=self.run_id)
-
-    def init_run(self, *args, **kwargs) -> neptune.metadata_containers.Run:
-
-        if not self.run_id:
-            raise RunIDNotSet
-
-        if "with_id" in kwargs:
-            warnings.warn(
-                "Overwriting run id will cause connection to a run that was not created by neptune "
-                "ZenML integration in the current session"
-            )
-            self.run_id = kwargs.pop("with_id")
-
-        run = neptune.init_run(*args, with_id=self.run_id, **kwargs)
-
-        return run
 
 
 def get_neptune_run() -> neptune.metadata_containers.Run:
