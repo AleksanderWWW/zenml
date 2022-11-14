@@ -1,7 +1,9 @@
 from zenml.pipelines import pipeline
 
 
-@pipeline(enable_cache=False,)
+@pipeline(
+    enable_cache=False,
+)
 def neptune_example_pipeline(
     importer,
     normalizer,

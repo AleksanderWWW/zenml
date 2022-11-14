@@ -1,6 +1,5 @@
-import os
 import hashlib
-
+import os
 from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 import neptune.new as neptune
@@ -9,21 +8,15 @@ from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTracker,
     BaseExperimentTrackerConfig,
 )
-
-from zenml.utils.secret_utils import SecretField
-
-from zenml.integrations.neptune.neptune_constants import (
-    NEPTUNE_PROJECT,
-    NEPTUNE_API_TOKEN,
-)
-
 from zenml.integrations.neptune.experiment_trackers.run_state import RunState
+from zenml.integrations.neptune.neptune_constants import (
+    NEPTUNE_API_TOKEN,
+    NEPTUNE_PROJECT,
+)
+from zenml.utils.secret_utils import SecretField
 
 if TYPE_CHECKING:
     from zenml.config.step_run_info import StepRunInfo
-
-
-NEPTUNE_RUN_TYPE = Union[neptune.Run, "MockRun", None]
 
 
 class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
@@ -67,9 +60,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
         token = self.config.api_token or os.getenv(NEPTUNE_API_TOKEN)
 
         run = neptune.init_run(
-            project=project,
-            api_token=token,
-            custom_run_id=run_id
+            project=project, api_token=token, custom_run_id=run_id
         )
 
         self.run_state.set_active_run(run)

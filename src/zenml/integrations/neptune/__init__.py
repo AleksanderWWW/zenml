@@ -1,7 +1,4 @@
-from typing import (
-    List,
-    Type,
-)
+from typing import List, Type
 
 from zenml.integrations.constants import NEPTUNE
 from zenml.integrations.integration import Integration
@@ -17,14 +14,20 @@ class NeptuneIntegration(Integration):
     """Definition of Neptune integration for ZenML."""
 
     NAME = NEPTUNE
-    REQUIREMENTS = ["neptune-client==0.16.9", ]
+    REQUIREMENTS = [
+        "neptune-client==0.16.9",
+    ]
 
     @classmethod
     def flavors(cls) -> List[Type[Flavor]]:
         """Declare the stack component flavors for the <EXAMPLE> integration."""
-        from zenml.integrations.neptune.flavors import NeptuneExperimentTrackerFlavor
+        from zenml.integrations.neptune.flavors import (
+            NeptuneExperimentTrackerFlavor,
+        )
 
-        return [NeptuneExperimentTrackerFlavor, ]
+        return [
+            NeptuneExperimentTrackerFlavor,
+        ]
 
 
 NeptuneIntegration.check_installation()  # this checks if the requirements are installed

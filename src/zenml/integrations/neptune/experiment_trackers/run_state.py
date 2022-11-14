@@ -1,15 +1,15 @@
 import warnings
-
-from typing import Callable, TypeVar
 from functools import partial
+from typing import Callable, TypeVar
 
 import neptune.new as neptune
 
 from zenml.client import Client
 from zenml.integrations.constants import NEPTUNE
 
-
-NEPTUNE_F = TypeVar("NEPTUNE_F", bound=Callable[..., neptune.metadata_containers.Run])
+NEPTUNE_F = TypeVar(
+    "NEPTUNE_F", bound=Callable[..., neptune.metadata_containers.Run]
+)
 
 
 def singleton(class_):
@@ -19,6 +19,7 @@ def singleton(class_):
         if class_ not in instances:
             instances[class_] = class_(*args, **kwargs)
         return instances[class_]
+
     return getinstance
 
 
@@ -36,7 +37,9 @@ class RunState:
         self._run_id = ""  # potentially redundant
         self._active_run = None
 
-    def set_active_run(self, neptune_run: neptune.metadata_containers.Run) -> None:
+    def set_active_run(
+        self, neptune_run: neptune.metadata_containers.Run
+    ) -> None:
         self._active_run = neptune_run
 
     @property
@@ -65,8 +68,10 @@ class RunState:
             raise RunIDNotSet
 
         if "with_id" in kwargs:
-            warnings.warn("Overwriting run id will cause connection to a run that was not created by neptune "
-                          "ZenML integration in the current session")
+            warnings.warn(
+                "Overwriting run id will cause connection to a run that was not created by neptune "
+                "ZenML integration in the current session"
+            )
             self.run_id = kwargs.pop("with_id")
 
         run = neptune.init_run(*args, with_id=self.run_id, **kwargs)
@@ -87,4 +92,5 @@ def neptune_step(step):
 
     def wrapper(*args, **kwargs):
         return step(*args, experiment_tracker=experiment_tracker, **kwargs)
+
     return wrapper

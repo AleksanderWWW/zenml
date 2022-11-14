@@ -1,11 +1,15 @@
 import numpy as np
 import tensorflow as tf
-
 from neptune.new.integrations.tensorflow_keras import NeptuneCallback
 
+from zenml.integrations.neptune.experiment_trackers.run_state import (
+    get_neptune_run,
+    neptune_step,
+)
+from zenml.integrations.tensorflow.materializers.keras_materializer import (
+    KerasMaterializer,
+)
 from zenml.steps import BaseParameters, step
-from zenml.integrations.neptune.experiment_trackers.run_state import get_neptune_run, neptune_step
-from zenml.integrations.tensorflow.materializers.keras_materializer import KerasMaterializer
 
 
 class TrainerParameters(BaseParameters):
@@ -39,12 +43,15 @@ def tf_trainer(
     model.compile(
         optimizer=tf.keras.optimizers.Adam(params.lr),
         loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        metrics=["accuracy"]
+        metrics=["accuracy"],
     )
 
-    model.fit(x_train, y_train,
-              epochs=params.epochs,
-              batch_size=64,
-              callbacks=[neptune_cbk])
+    model.fit(
+        x_train,
+        y_train,
+        epochs=params.epochs,
+        batch_size=64,
+        callbacks=[neptune_cbk],
+    )
 
     return model
