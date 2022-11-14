@@ -5,8 +5,7 @@ from neptune.new.integrations.tensorflow_keras import NeptuneCallback
 
 from zenml.steps import BaseParameters, step
 from zenml.integrations.neptune.neptune_utils import get_neptune_run, neptune_step
-
-from examples.neptune_tracking.materializers import TensorFlowModelMaterializer
+from zenml.integrations.tensorflow.materializers.keras_materializer import KerasMaterializer
 
 
 class TrainerParameters(BaseParameters):
@@ -17,7 +16,7 @@ class TrainerParameters(BaseParameters):
 
 
 @neptune_step
-@step(enable_cache=False, output_materializers=TensorFlowModelMaterializer)
+@step(enable_cache=False, output_materializers=KerasMaterializer)
 def tf_trainer(
     params: TrainerParameters,
     x_train: np.ndarray,
