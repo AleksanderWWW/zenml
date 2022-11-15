@@ -6,6 +6,7 @@ from zenml.integrations.neptune.experiment_trackers.run_state import (
     get_neptune_run,
     neptune_step,
 )
+from zenml.integrations.neptune.experiment_trackers import NeptuneExperimentTrackerSettings
 from zenml.integrations.tensorflow.materializers.keras_materializer import (
     KerasMaterializer,
 )
@@ -19,8 +20,11 @@ class TrainerParameters(BaseParameters):
     lr: float = 0.001
 
 
+settings = NeptuneExperimentTrackerSettings(tags={"keras", "mnist"})
+
+
 @neptune_step
-@step(enable_cache=False, output_materializers=KerasMaterializer)
+@step(enable_cache=False, output_materializers=KerasMaterializer, settings={"experiment_tracker.neptune": settings})
 def tf_trainer(
     params: TrainerParameters,
     x_train: np.ndarray,
