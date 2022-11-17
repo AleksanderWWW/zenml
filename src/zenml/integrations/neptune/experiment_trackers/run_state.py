@@ -1,3 +1,5 @@
+import functools
+
 import neptune.new as neptune
 
 from zenml.client import Client
@@ -16,6 +18,10 @@ def singleton(class_):
 
 
 class NoActiveRunException(Exception):
+    pass
+
+
+class InvalidExperimentTrackerSelected(Exception):
     pass
 
 
@@ -42,12 +48,16 @@ def get_neptune_run() -> neptune.metadata_containers.Run:
     experiment_tracker = client.active_stack.experiment_tracker
     if experiment_tracker.flavor == NEPTUNE:
         return experiment_tracker.run_state.active_run
+    raise InvalidExperimentTrackerSelected("Fetching neptune run works only with neptune flavor of"
+                                           "experiment tracker selected. Current selection is %s"
+                                           % experiment_tracker.flavor)
 
 
 def neptune_step(step):
     client = Client()
     experiment_tracker = client.active_stack.experiment_tracker.name
 
+    @functools.wraps(step)
     def wrapper(*args, **kwargs):
         return step(*args, experiment_tracker=experiment_tracker, **kwargs)
 
