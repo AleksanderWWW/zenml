@@ -30,7 +30,7 @@ class InvalidExperimentTrackerSelected(Exception):
 
 
 @singleton
-class RunState:
+class RunProvider:
     def __init__(self):
         self._active_run = None
         self._project = None
