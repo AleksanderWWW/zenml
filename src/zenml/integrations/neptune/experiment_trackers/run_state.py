@@ -70,9 +70,6 @@ class RunState:
     def tags(self, tags: List[str]):
         self._tags = tags
 
-    def set_active_run(self, run: neptune.metadata_containers.Run):
-        self._active_run = run
-
     @property
     def active_run(self) -> neptune.metadata_containers.Run:
         if self._active_run is None:
@@ -83,7 +80,7 @@ class RunState:
                 tags=self.tags
             )
 
-            self.set_active_run(run)
+            self._active_run = run
         return self._active_run
 
 
