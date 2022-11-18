@@ -1,8 +1,4 @@
-import hashlib
-import os
 from typing import TYPE_CHECKING, Any, Optional, Type, Set, cast
-
-import neptune.new as neptune
 
 from zenml.config.base_settings import BaseSettings
 from zenml.experiment_trackers.base_experiment_tracker import (
@@ -10,10 +6,7 @@ from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTrackerConfig,
 )
 from zenml.integrations.neptune.experiment_trackers.run_state import RunState
-from zenml.integrations.neptune.neptune_constants import (
-    NEPTUNE_API_TOKEN,
-    NEPTUNE_PROJECT,
-)
+
 from zenml.utils.secret_utils import SecretField
 
 if TYPE_CHECKING:
@@ -22,7 +15,7 @@ if TYPE_CHECKING:
 
 class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
     project: Optional[str] = None
-    api_token: str = SecretField()
+    api_token: Optional[str] = SecretField()
 
 
 class NeptuneExperimentTrackerSettings(BaseSettings):
@@ -72,15 +65,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
             self.get_settings(info) or NeptuneExperimentTrackerSettings()
         )
 
-        run_name = info.run_name
-
-        run_id = hashlib.md5(run_name.encode()).hexdigest()
-
-        project = self.config.project or os.getenv(NEPTUNE_PROJECT)
-        token = self.config.api_token or os.getenv(NEPTUNE_API_TOKEN)
-
-        run = neptune.init_run(
-            project=project, api_token=token, custom_run_id=run_id, tags=list(settings.tags)
-        )
-
-        self.run_state.set_active_run(run)
+        self.run_state.token = self.config.api_token
+        self.run_state.project = self.config.project
+        self.run_state.run_name = info.run_name
+        self.run_state.tags = list(settings.tags)

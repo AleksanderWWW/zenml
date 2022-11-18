@@ -1,4 +1,5 @@
 import functools
+import hashlib
 
 import neptune.new as neptune
 
@@ -28,18 +29,58 @@ class InvalidExperimentTrackerSelected(Exception):
 @singleton
 class RunState:
     def __init__(self):
-        self._run_id = ""  # potentially redundant
         self._active_run = None
+        self._project = None
+        self._run_name = None
+        self._token = None
+        self._tags = None
 
-    def set_active_run(
-        self, neptune_run: neptune.metadata_containers.Run
-    ) -> None:
-        self._active_run = neptune_run
+    @property
+    def project(self):
+        return self._project
+
+    @property
+    def token(self):
+        return self._token
+
+    @property
+    def run_name(self):
+        return self._run_name
+
+    @property
+    def tags(self):
+        return self._tags
+
+    @project.setter
+    def project(self, project):
+        self._project = project
+
+    @token.setter
+    def token(self, token):
+        self._token = token
+
+    @run_name.setter
+    def run_name(self, run_name):
+        self._run_name = run_name
+
+    @tags.setter
+    def tags(self, tags):
+        self._tags = tags
+
+    def set_active_run(self, run: neptune.metadata_containers.Run):
+        self._active_run = run
 
     @property
     def active_run(self) -> neptune.metadata_containers.Run:
         if self._active_run is None:
-            raise NoActiveRunException("No active run at the moment")
+            run = neptune.init_run(
+                project=self.project,
+                api_token=self.token,
+                custom_run_id=hashlib.md5(self.run_name.encode()).hexdigest(),
+                tags=self.tags
+            )
+
+            self.set_active_run(run)
         return self._active_run
 
 
