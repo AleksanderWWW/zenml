@@ -1,4 +1,4 @@
-from .neptune_experiment_tracker import (
+from zenml.integrations.neptune.experiment_trackers.neptune_experiment_tracker import (
     NeptuneExperimentTracker,
     NeptuneExperimentTrackerConfig,
     NeptuneExperimentTrackerSettings,

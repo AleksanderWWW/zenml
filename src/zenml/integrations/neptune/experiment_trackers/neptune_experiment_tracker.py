@@ -84,6 +84,3 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
         )
 
         self.run_state.set_active_run(run)
-
-    def cleanup_step_run(self, info: "StepRunInfo") -> None:
-        ...
