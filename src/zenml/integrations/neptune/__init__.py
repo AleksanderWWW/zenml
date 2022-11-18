@@ -15,7 +15,7 @@ class NeptuneIntegration(Integration):
 
     NAME = NEPTUNE
     REQUIREMENTS = [
-        "neptune-client==0.16.9",
+        "neptune-client>0.16.9",
     ]
 
     @classmethod

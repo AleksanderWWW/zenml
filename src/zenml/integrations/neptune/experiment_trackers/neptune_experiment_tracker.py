@@ -1,6 +1,6 @@
 import hashlib
 import os
-from typing import TYPE_CHECKING, Any, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, Optional, Type, Set, cast
 
 import neptune.new as neptune
 
@@ -26,7 +26,7 @@ class NeptuneExperimentTrackerConfig(BaseExperimentTrackerConfig):
 
 
 class NeptuneExperimentTrackerSettings(BaseSettings):
-    tags = set()
+    tags: Set[str] = set()
 
 
 class NeptuneExperimentTracker(BaseExperimentTracker):
