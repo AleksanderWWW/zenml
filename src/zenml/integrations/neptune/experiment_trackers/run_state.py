@@ -1,9 +1,12 @@
 import functools
 import hashlib
 
+from typing import List
+
 import neptune.new as neptune
 
 from zenml.client import Client
+from zenml.steps.base_step import BaseStepMeta
 from zenml.integrations.constants import NEPTUNE
 
 
@@ -36,35 +39,35 @@ class RunState:
         self._tags = None
 
     @property
-    def project(self):
+    def project(self) -> str:
         return self._project
 
     @property
-    def token(self):
+    def token(self) -> str:
         return self._token
 
     @property
-    def run_name(self):
+    def run_name(self) -> str:
         return self._run_name
 
     @property
-    def tags(self):
+    def tags(self) -> List[str]:
         return self._tags
 
     @project.setter
-    def project(self, project):
+    def project(self, project: str):
         self._project = project
 
     @token.setter
-    def token(self, token):
+    def token(self, token: str):
         self._token = token
 
     @run_name.setter
-    def run_name(self, run_name):
+    def run_name(self, run_name: str):
         self._run_name = run_name
 
     @tags.setter
-    def tags(self, tags):
+    def tags(self, tags: List[str]):
         self._tags = tags
 
     def set_active_run(self, run: neptune.metadata_containers.Run):
@@ -94,7 +97,7 @@ def get_neptune_run() -> neptune.metadata_containers.Run:
                                            % experiment_tracker.flavor)
 
 
-def neptune_step(step):
+def neptune_step(step: BaseStepMeta):
     client = Client()
     experiment_tracker = client.active_stack.experiment_tracker.name
 
