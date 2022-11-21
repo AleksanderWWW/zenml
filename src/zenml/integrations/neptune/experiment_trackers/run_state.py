@@ -1,13 +1,12 @@
 import functools
 import hashlib
-
 from typing import List
 
 import neptune.new as neptune
 
 from zenml.client import Client
-from zenml.steps.base_step import BaseStepMeta
 from zenml.integrations.constants import NEPTUNE
+from zenml.steps.base_step import BaseStepMeta
 
 
 def singleton(class_):
@@ -77,7 +76,7 @@ class RunProvider:
                 project=self.project,
                 api_token=self.token,
                 custom_run_id=hashlib.md5(self.run_name.encode()).hexdigest(),
-                tags=self.tags
+                tags=self.tags,
             )
 
             self._active_run = run
@@ -89,9 +88,11 @@ def get_neptune_run() -> neptune.metadata_containers.Run:
     experiment_tracker = client.active_stack.experiment_tracker
     if experiment_tracker.flavor == NEPTUNE:
         return experiment_tracker.run_state.active_run
-    raise InvalidExperimentTrackerSelected("Fetching neptune run works only with neptune flavor of"
-                                           "experiment tracker selected. Current selection is %s"
-                                           % experiment_tracker.flavor)
+    raise InvalidExperimentTrackerSelected(
+        "Fetching neptune run works only with neptune flavor of"
+        "experiment tracker selected. Current selection is %s"
+        % experiment_tracker.flavor
+    )
 
 
 def neptune_step(step: BaseStepMeta):

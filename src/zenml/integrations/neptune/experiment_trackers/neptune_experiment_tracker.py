@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Optional, Type, Set, cast
+from typing import TYPE_CHECKING, Any, Optional, Set, Type, cast
 
 from zenml.config.base_settings import BaseSettings
 from zenml.experiment_trackers.base_experiment_tracker import (
@@ -6,7 +6,6 @@ from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTrackerConfig,
 )
 from zenml.integrations.neptune.experiment_trackers.run_state import RunState
-
 from zenml.utils.secret_utils import SecretField
 
 if TYPE_CHECKING:
@@ -62,7 +61,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
 
         settings = cast(
             NeptuneExperimentTrackerSettings,
-            self.get_settings(info) or NeptuneExperimentTrackerSettings()
+            self.get_settings(info) or NeptuneExperimentTrackerSettings(),
         )
 
         self.run_state.token = self.config.api_token
