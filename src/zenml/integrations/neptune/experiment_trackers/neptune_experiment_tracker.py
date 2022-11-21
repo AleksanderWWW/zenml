@@ -5,7 +5,7 @@ from zenml.experiment_trackers.base_experiment_tracker import (
     BaseExperimentTracker,
     BaseExperimentTrackerConfig,
 )
-from zenml.integrations.neptune.experiment_trackers.run_state import RunState
+from zenml.integrations.neptune.experiment_trackers.run_state import RunProvider
 from zenml.utils.secret_utils import SecretField
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ class NeptuneExperimentTracker(BaseExperimentTracker):
             **kwargs: Arbitrary keyword arguments.
         """
         super().__init__(*args, **kwargs)
-        self.run_state: RunState = RunState()
+        self.run_state: RunProvider = RunProvider()
 
     @property
     def config(self) -> NeptuneExperimentTrackerConfig:
